@@ -1,29 +1,6 @@
 const {initDB} = require("../database/db")
 
 
-// async function refreshDB ({name, capital, region, population, currency_code, exchange_rate, estimated_gdp, flag_url }){
-//   const db = await initDB();
-//   const sql = `
-//     INSERT INTO country (name, capital, region, population, currency_code, exchange_rate, estimated_gdp, flag_url )
-//     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-//   `;
-//   //   const values = [
-//   //   name ?? null,
-//   //   capital ?? null,
-//   //   region ?? null,
-//   //   population ?? null,
-//   //   currency_code ?? null,
-//   //   exchange_rate ?? null,
-//   //   estimated_gdp ?? null,
-//   //   flag_url ?? null
-//   // ];
-//   const [result] = await db.execute(sql, [name, capital, region, population, currency_code, exchange_rate, estimated_gdp, flag_url ]);
-//   return result;
-// }
-
-
-
-
 async function refreshDB(countries) {
   const db = await initDB();
 
@@ -32,14 +9,12 @@ async function refreshDB(countries) {
     return;
   }
 
-  // Define SQL for bulk insert
   const sql = `
     INSERT INTO country 
       (name, capital, region, population, currency_code, exchange_rate, estimated_gdp, flag_url)
     VALUES ?
   `;
 
-  // Convert array of objects → array of arrays (for MySQL bulk insert)
   const values = countries.map(c => [
     c.name ?? null,
     c.capital ?? null,
@@ -52,6 +27,7 @@ async function refreshDB(countries) {
   ]);
 
   try {
+    await db.query("TRUNCATE TABLE country");
     await db.query(sql, [values]);
     console.log(`Inserted ${values.length} countries successfully.`);
   } catch (error) {
@@ -74,10 +50,26 @@ async function getCountries(){
   }
 }
 
+async function getCountryByName(name){
+  const db = await initDB();
+  const sql = `
+    SELECT * FROM country
+      WHERE name ?
+  `
+  try{
+    const [result] = await db.query(sql, [name]);
+    return result;
+  }catch(error){
+    console.log( "Error retrieving country:", error.message)
+  }
+
+}
+
 
 
 module.exports = {
   refreshDB,
-  getCountries
+  getCountries,
+  getCountryByName
 }
 

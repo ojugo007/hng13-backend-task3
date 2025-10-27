@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const { refreshDB, getCountries  } = require("./models/countryModel");
+const { refreshDB, getCountries, getCountryByName  } = require("./models/countryModel");
 
 router.post("/refresh", async (req, res) => {
   const countries_uri =
@@ -40,6 +40,7 @@ router.post("/refresh", async (req, res) => {
         delete country.currencies;
         return {
           ...country,
+          flag_url: country.flag,
           currency_code: null,
           exchange_rate: null,
           estimated_gdp: 0,
@@ -50,6 +51,7 @@ router.post("/refresh", async (req, res) => {
         delete country.currencies;
         return {
           ...country,
+          flag_url: country.flag,
           currency_code: code,
           exchange_rate: null,
           estimated_gdp: null,
@@ -59,6 +61,7 @@ router.post("/refresh", async (req, res) => {
       delete country.currencies;
       return {
         ...country,
+        flag_url: country.flag,
         currency_code: code,
         exchange_rate: rate,
         estimated_gdp: getGdpEstimate(country.population, rate),
@@ -80,6 +83,19 @@ router.post("/refresh", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const result = await getCountries()
+    res.status(200).json(result)
+  } catch (error) {
+    console.log(error.message)
+  }
+});
+
+router.get("/:name", async (req, res) => {
+    const {name} = req.params;
+    if(!name){
+        res.status(400).json({error :"parse a country name", details : "no name parsed"})
+    }
+  try {
+    const result = await getCountryByName(name)
     res.status(200).json(result)
   } catch (error) {
     console.log(error.message)
