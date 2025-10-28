@@ -58,10 +58,10 @@ async function getCountries({ region, currency, sort }) {
   if (sort) {
     switch (sort.toLowerCase()) {
       case "gdp_desc":
-        sql += " ORDER BY estimated_gdp DESC";
+        sql += " ORDER BY CAST(estimated_gdp AS DECIMAL(20, 2)) DESC";
         break;
       case "gdp_asc":
-        sql += " ORDER BY estimated_gdp ASC";
+        sql += " ORDER BY CAST(estimated_gdp AS DECIMAL(20, 2)) ASC";        
         break;
       case "name_asc":
         sql += " ORDER BY name ASC";
@@ -92,14 +92,13 @@ async function getCountryByName(name) {
   `;
   try {
     const [result] = await db.query(sql, [name]);
-
+    
     if (result.length === 0) {
       return { error: "country not found" };
     }
     return result;
   } catch (error) {
-    console.log("Error retrieving country:", error.message);
-    console.error("Error retrieving country:", error.message);
+    
     return { error: "database error" };
   }
 }
@@ -125,7 +124,7 @@ async function DeleteCountry(name) {
 async function getStatus() {
   const db = await initDB();
   const sql = `
-    SELECT COUNT(*) AS total_countries, MAX(last_refreshed_at) AS last_updated_at FROM country
+    SELECT COUNT(*) AS total_countries, MAX(last_refreshed_at) AS last_refreshed_at FROM country
   `;
   try {
     const [result] = await db.query(sql);

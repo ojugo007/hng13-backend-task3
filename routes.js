@@ -136,10 +136,15 @@ router.get("/:name", validateParamType, async (req, res) => {
 
   try {
     const result = await getCountryByName(name);
-    
-    if(result.error === "country not found"){
-        return res.status(404).json(result);
+    console.log(result)
+    if (!result || result.error === "country not found") {
+      return res.status(404).json({ error: "country not found" });
     }
+
+    if (result.error === "database error") {
+      return res.status(500).json({ error: "database error" });
+    }
+
     return res.status(200).json(result);
   } catch (error) {
     console.log(error.message);
