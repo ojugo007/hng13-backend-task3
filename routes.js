@@ -118,15 +118,6 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.get("/status", async (req, res) => {
-  try {
-    const result = await getStatus();
-    res.status(200).json(result);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 // summary image route handler
 router.get("/image", (req, res) => {
   const imagePath = path.join(__dirname, "./cache/summary.png");
@@ -161,7 +152,7 @@ router.delete("/:name", validateParamType, async (req, res) => {
   try {
     const result = await DeleteCountry(name);
     if(result.error === "country not found"){
-        return res.status(404).json(result);
+      return res.status(404).json(result);
     }
     return res.status(200).json(result);
   } catch (error) {

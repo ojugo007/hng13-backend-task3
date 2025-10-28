@@ -80,7 +80,7 @@ async function getCountries({ region, currency, sort }) {
     return rows;
   } catch (error) {
     console.error("Error retrieving countries:", error.message);
-    throw error;
+    return {error : 'Error retrieving countries'}
   }
 }
 
@@ -99,6 +99,8 @@ async function getCountryByName(name) {
     return result;
   } catch (error) {
     console.log("Error retrieving country:", error.message);
+    console.error("Error retrieving country:", error.message);
+    return { error: "database error" };
   }
 }
 
