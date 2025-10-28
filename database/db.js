@@ -43,6 +43,17 @@ async function initDB() {
   `;
   await connection.query(createTableSQL);
   console.log("Table 'country' ensured");
+// system status
+  const createSystemStatusSQL = `
+  CREATE TABLE IF NOT EXISTS system_status (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    last_refreshed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      ON UPDATE CURRENT_TIMESTAMP
+  )
+`;
+  await connection.query(createSystemStatusSQL);
+
+  await connection.query(`INSERT IGNORE INTO system_status (id) VALUES (1)`);
 
   db = connection;
   return db;
