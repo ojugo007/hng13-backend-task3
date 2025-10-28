@@ -2,7 +2,7 @@ module.exports = function validateParamType(req, res, next){
     const {name} = req.params;
 
     if(!name){
-        res.status(400).json({error :"parse a country name", details : "no name parsed"})
+        res.status(400).json({error :"parse a country name"})
     }
 
     const reg = /^[A-Za-z\s]+$/;
